@@ -70,19 +70,19 @@ class UI:
         Label(frame , text="username").grid(row=6, column=0)
         Label(frame ,text="password").grid(row =7, column=0)
         name = Entry(frame, width=20)
-        dob = Entry(frame , width=20)
+        age = Entry(frame , width=20)
         address = Entry(frame , width=20)
         TOA = Entry(frame , width=20)
         username = Entry(frame, width=20)
         password = Entry(frame , width=20)
         name.grid(row=2, column=1)
-        dob.grid(row=3, column=1)
+        age.grid(row=3, column=1)
         address.grid(row=4, column=1)
         TOA.grid(row=5, column=1)
         username.grid(row=6, column=1)
         password.grid(row=7, column=1)
 
-        submit = Button(frame ,text = "submit",command=lambda: self.signup(name.get(),dob.get(),address.get(),username.get(),password.get(),TOA.get()))
+        submit = Button(frame ,text = "submit",command=lambda: self.signup(name.get(),age.get(),address.get(),username.get(),password.get(),TOA.get()))
         #submit.bind("<Button-1>", self.showsignin)
         submit.grid(row = 4, column=1)
 
@@ -148,7 +148,7 @@ class UI:
     def showsubmenu(self):
         self.Frames["submenu"].tkraise()
 
-    def loginto(self,event):
+    def loginto(self,username,password):
         db = DB()
         self.accountno = db.login(username,password)
         if (self.accountno > 0):
@@ -160,7 +160,7 @@ class UI:
         if ((username == "system") and (password == "root")):
             print ("closed account")
             db = DB()
-            db.closed(
+            db.close(self.accountno)
 
     def changeaddress(self):
         address = input("enter the address")
@@ -199,9 +199,9 @@ class UI:
         self.accountno = 0
         self.showsignin()
 
-    def signup(self,name,dob,address,username,password,TOA):
+    def signup(self,name,age,address,username,password,TOA):
         db = DB()
-        db.createaccount(name,dob,address,username,password,TOA)
+        db.createaccount(name,age,address,username,password,TOA)
         self.showsignin()
         
 
@@ -209,12 +209,19 @@ class DB:
     cursor = None
     accountno = 1500
     def __init__(self):
-        con = cx_Oracle.connect("VIDHU/Yazhini@XE")
+        con = cx_Oracle.connect("bank/root@XE")
         self.cursor = con.cursor()
 
-    def createaccount(self,name,dob,address,username,password,TOA):
+    def createaccount(self,name,age,address,username,password,TOA):
+        print (name)
+        print (age)
+        print (address)
+        print (username)
+        print (password)
+        print (TOA)
         self.accountno = self.accountno + 1
-        self.cursor.execute("insert into customer values(:accountno,:name,:dob,:address,:username, :password ,:TOA ,:balance)",{'accountno':accountno,'name':name,'dob':dob,'address':address,'password':password,'TOA':TOA,'balance': 0})
+        balance = 0
+        self.cursor.execute("insert into customer values(:accountno,:name,:age,:address,:username, :password ,:TOA ,:balance)",{'accountno':self.accountno,'name':name,'age':age,'address':address,'username':username,'password':password,'TOA':TOA,'balance': balance})
 
     def deposit(self,amount,accountno):
         self.cursor.execute("select balance from customer where accountno = :accountno",{'accountno':accountno})
@@ -249,4 +256,4 @@ class DB:
     def updateaddress(self,address,accountno):
         self.cursor.execute("update customer set address = :address where accountno = :accountno",{'address':address,'accountno':accountno})
     def close(self,accountno):
-        self.cursor.execute("insert into closeaccount values(:accountno",{'accountno'=accountno})
+        self.cursor.execute("insert into closeaccount values(:accountno",{'accountno':accountno})
