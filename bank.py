@@ -20,22 +20,22 @@ class UI:
         frame = Frame(self.Window, width=768, height=576 , bg="ivory")
         frame.grid(row=0,column=0)
         frame.grid_propagate(0)
-        Label(frame , text="Menu" ,fg="red").grid(row=0 , column=2)
+        Label(frame , text="Menu" ,fg="red").grid(row=0 , column=4)
         signup = Button(frame ,text = "sign up")
         signup.bind("<Button-1>", self.showsignup)
-        signup.grid(row = 2, column=2)
+        signup.grid(row = 2, column=4)
 
         signin = Button(frame ,text = "sign in",command=lambda: self.showsignin())
         #signin.bind("<Button-1>", self.showsignin)
-        signin.grid(row = 3, column=2)
+        signin.grid(row = 3, column=4)
 
         admin = Button(frame ,text = "admin sign in ")
         admin.bind("<Button-1>", self.showadmin)
-        admin.grid(row = 4, column=2)
+        admin.grid(row = 4, column=4)
 
         Quit = Button(frame ,text = "Quit",command=self.Window.destroy)
         #Quit.bind("<Button-1>", self.Quitwindow)
-        Quit.grid(row = 5, column=2)
+        Quit.grid(row = 5, column=4)
 
         self.Frames["main"] = frame
 
@@ -43,7 +43,7 @@ class UI:
         frame = Frame(self.Window, width=768, height=576 , bg="ivory")
         frame.grid(row=0,column=0)
         frame.grid_propagate(0)
-        Label(frame , text="Login" ,fg="red").grid(row=0 , column=2)
+        Label(frame , text="Login" ,fg="red").grid(row=0 , column=1)
         Label(frame , text="username").grid(row=2, column=0)
         Label(frame ,text="password").grid(row =3, column=0)
         username = Entry(frame, width=20)
@@ -62,9 +62,9 @@ class UI:
         frame = Frame(self.Window, width=768, height=576 , bg="ivory" ,bd=5)
         frame.grid(row=0,column=0)
         frame.grid_propagate(0)
-        Label(frame , text="signup" ,fg="red").grid(row=0 , column=2)
+        Label(frame , text="signup" ,fg="red").grid(row=0 , column=1)
         Label(frame , text="Name of Accountholder").grid(row=2, column=0)
-        Label(frame ,text="Date of birth").grid(row =3, column=0)
+        Label(frame ,text="age").grid(row =3, column=0)
         Label(frame , text="address").grid(row=4, column=0)
         Label(frame , text="Type Of Account").grid(row=5, column=0)
         Label(frame , text="username").grid(row=6, column=0)
@@ -84,7 +84,7 @@ class UI:
 
         submit = Button(frame ,text = "submit",command=lambda: self.signup(name.get(),age.get(),address.get(),username.get(),password.get(),TOA.get()))
         #submit.bind("<Button-1>", self.showsignin)
-        submit.grid(row = 4, column=1)
+        submit.grid(row = 9, column=1)
 
         self.Frames["signup"] = frame
 
@@ -92,7 +92,7 @@ class UI:
         frame = Frame(self.Window, width=768, height=576 , bg="ivory")
         frame.grid(row=0,column=0)
         frame.grid_propagate(0)
-        Label(frame , text="Login" ,fg="red").grid(row=0 , column=2)
+        Label(frame , text="Login" ,fg="red").grid(row=0 , column=1)
         Label(frame , text="username").grid(row=2, column=0)
         Label(frame ,text="password").grid(row =3, column=0)
         username = Entry(frame, width=20)
@@ -135,7 +135,50 @@ class UI:
 
         self.Frames["submenu"] = frame
 
+    def displaystatement(self, acctno, name, age, address, TOA, balance):
+         #window creation
+        frame = Frame(self.Window, width=768, height=576 , bg="ivory")
+        frame.grid(row=0,column=0)
+        frame.grid_propagate(0)
+        Label(frame , text="account details" ,fg="red").grid(row=0 , column=1)
+        
+        Label(frame , text="Account Number :").grid(row=2, column=0)
+        Label(frame , text="Accountholder Name :").grid(row=3, column=0)
+        Label(frame ,text="Age :").grid(row =4, column=0)
+        Label(frame , text="Address :").grid(row=5, column=0)
+        Label(frame , text="Type Of Account :").grid(row=6, column=0)
+        Label(frame , text="Balance :").grid(row=7, column=0)
+        
+        Label(frame , text=str(acctno)).grid(row=2, column=2)
+        Label(frame , text=str(name)).grid(row=3, column=2)
+        Label(frame ,text=str(age)).grid(row =4, column=2)
+        Label(frame , text=str(address)).grid(row=5, column=2)
+        Label(frame , text=str(TOA)).grid(row=6, column=2)
+        Label(frame , text=str(balance)).grid(row=7, column=2)
+        
+        back = Button(frame ,text = "back", command= lambda: self.showsubmenu())
+        back.grid(row = 8, column=1)
 
+        self.Frames["display"] = frame
+
+    def admindisplay(self, record):
+        frame = Frame(self.Window, width=768, height=576 , bg="ivory")
+        frame.grid(row=0,column=0)
+        frame.grid_propagate(0)
+        Label(frame , text="closed account details" ,fg="red").grid(row=0 , column=1)
+        
+        Label(frame , text="Account Number :").grid(row=2, column=0)
+        i=2
+        for acctno in record:
+            i = i+1
+            Label(frame , text=str(acctno)).grid(row=i, column=0)
+
+        back = Button(frame ,text = "back")
+        back.bind("<Button-1>", self.showadmin)
+        back.grid(row = 3, column=2)
+
+        self.Frames["closed"] = frame
+        
     def showsignup(self,event):
         self.Frames["signup"].tkraise()
 
@@ -148,6 +191,12 @@ class UI:
     def showsubmenu(self):
         self.Frames["submenu"].tkraise()
 
+    def showdisplay(self):
+        self.Frames["dislay"].tkraise()
+
+    def showclosedacct(self):
+        self.Frames["closed"].tkraise()
+
     def loginto(self,username,password):
         db = DB()
         self.accountno = db.login(username,password)
@@ -158,9 +207,12 @@ class UI:
         
     def adminlogin(self , username , password):
         if ((username == "system") and (password == "root")):
-            print ("closed account")
             db = DB()
-            db.close(self.accountno)
+            record = db.closedaccount()
+            print (record)
+            self.admindisplay(record[0])
+            self.showclosedacct()
+            
 
     def changeaddress(self):
         address = input("enter the address")
@@ -180,9 +232,17 @@ class UI:
     def printstatement(self):
         record = []
         db = DB()
-        record = db.display(self.accountno)
-        for statement in record:
-            print (statement)
+        statement = db.display(self.accountno)
+        print (statement[0])
+        actno  = statement[0][0]
+        name = statement[0][1]
+        age = statement[0][2]
+        address = statement[0][3]
+        TOA = statement[0][6]
+        balance =  statement[0][7]
+        self.displaystatement(actno, name, age, address, TOA, balance)
+        self.showdisplay()
+       
 
     def transfer(self):
         amount = input("enter the amount")
@@ -207,10 +267,11 @@ class UI:
 
 class DB:
     cursor = None
+    con = None
     accountno = 1500
     def __init__(self):
-        con = cx_Oracle.connect("bank/root@XE")
-        self.cursor = con.cursor()
+        self.con = cx_Oracle.connect("bank/root@XE")
+        self.cursor = self.con.cursor()
 
     def createaccount(self,name,age,address,username,password,TOA):
         print (name)
@@ -221,29 +282,34 @@ class DB:
         print (TOA)
         self.accountno = self.accountno + 1
         balance = 0
-        self.cursor.execute("insert into customer values(:accountno,:name,:age,:address,:username, :password ,:TOA ,:balance)",{'accountno':self.accountno,'name':name,'age':age,'address':address,'username':username,'password':password,'TOA':TOA,'balance': balance})
-
+        sql="insert into customer values(:accountno,:name,:age,:address,:username, :password ,:TOA ,:balance)"
+        self.cursor.execute(sql,{'accountno':self.accountno,'name':name,'age':age,'address':address,'username':username,'password':password,'TOA':TOA,'balance': balance})
+        self.con.commit()
+        
     def deposit(self,amount,accountno):
         self.cursor.execute("select balance from customer where accountno = :accountno",{'accountno':accountno})
         balance = self.cursor.fetchall()
         self.cursor.execute("update customer set balance = :balance where accountno = :accountno",{'balance':balance+amount,'accountno':accountno})
+        self.con.commit()
 
     def withdraw(self,amount,accountno):
         self.cursor.execute("select balance from customer where accountno = :accountno",{'accountno':accountno})
         balance = self.cursor.fetchall()
         self.cursor.execute("update customer set balance = :balance where accountno = :accountno",{'balance':balance-amount,'accountno':accountno})
-
+        self.con.commit()
+        
     def login(self,username ,password):
-        users = []
         self.cursor.execute("select username from customer")
         users = self.cursor.fetchall()
-        if username in users:
+        if (username in users[0]):
             self.cursor.execute("select password from customer where username = :username",{'username':username})
             passwrd = self.cursor.fetchall()
-            if (passwrd == password):
+            print (passwrd)
+            if (passwrd[0][0] == password):
                 self.cursor.execute("select accountno from customer where username = :username",{'username':username})
                 accountno = self.cursor.fetchall()
-                return accountno
+                print (accountno[0][0])
+                return accountno[0][0]
             else:
                 return 0
         else:
@@ -255,5 +321,13 @@ class DB:
         return (record)
     def updateaddress(self,address,accountno):
         self.cursor.execute("update customer set address = :address where accountno = :accountno",{'address':address,'accountno':accountno})
+        self.con.commit()
     def close(self,accountno):
-        self.cursor.execute("insert into closeaccount values(:accountno",{'accountno':accountno})
+        self.cursor.execute("insert into closeaccount values(:accountno)",{'accountno':accountno})
+        self.con.commit()
+    def closedaccount(self):
+        self.cursor.execute("select * from closeaccount")
+        record = self.cursor.fetchall()
+        return record
+            
+obj = UI()
