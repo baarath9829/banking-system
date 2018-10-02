@@ -1,4 +1,5 @@
 from Tkinter import *
+from datetime import datetime
 import random
 import cx_Oracle
 class UI:
@@ -21,22 +22,22 @@ class UI:
         frame = Frame(self.Window, width=768, height=576 , bg="ivory")
         frame.grid(row=0,column=0)
         frame.grid_propagate(0)
-        Label(frame , text="Menu" ,fg="red").grid(row=0 , column=4)
+        Label(frame , text="Menu" ,fg="red").grid(row=0 , column=3)
         signup = Button(frame ,text = "sign up")
         signup.bind("<Button-1>", self.showsignup)
-        signup.grid(row = 2, column=4)
+        signup.grid(row = 2, column=1)
 
         signin = Button(frame ,text = "sign in",command=lambda: self.showsignin())
         #signin.bind("<Button-1>", self.showsignin)
-        signin.grid(row = 3, column=4)
+        signin.grid(row = 2, column=4)
 
         admin = Button(frame ,text = "admin sign in ")
         admin.bind("<Button-1>", self.showadmin)
-        admin.grid(row = 4, column=4)
+        admin.grid(row = 3, column=3)
 
         Quit = Button(frame ,text = "Quit",command=self.Window.destroy)
         #Quit.bind("<Button-1>", self.Quitwindow)
-        Quit.grid(row = 5, column=4)
+        Quit.grid(row = 5, column=3)
 
         self.Frames["main"] = frame
 
@@ -70,7 +71,11 @@ class UI:
         Label(frame , text="Name of Accountholder").grid(row=2, column=0)
         Label(frame ,text="age").grid(row =3, column=0)
         Label(frame , text="address").grid(row=4, column=0)
-        Label(frame , text="Type Of Account").grid(row=5, column=0)
+        var=IntVar()
+        r1 = Radiobutton(frame, text="saving", variable=var, value=1)
+        r1.grid(row = 5, column=0)
+        r2 = Radiobutton(frame, text="current", variable=var, value=2)
+        r2.grid(row=5,column=1)
         Label(frame , text="username").grid(row=6, column=0)
         Label(frame ,text="password").grid(row =7, column=0)
         name = Entry(frame, width=20)
@@ -82,11 +87,10 @@ class UI:
         name.grid(row=2, column=1)
         age.grid(row=3, column=1)
         address.grid(row=4, column=1)
-        TOA.grid(row=5, column=1)
         username.grid(row=6, column=1)
         password.grid(row=7, column=1)
 
-        submit = Button(frame ,text = "submit",command=lambda: self.signup(name.get(),age.get(),address.get(),username.get(),password.get(),TOA.get()))
+        submit = Button(frame ,text = "submit",command=lambda: self.signup(name.get(),age.get(),address.get(),username.get(),password.get(),var.get()))
         #submit.bind("<Button-1>", self.showsignin)
         submit.grid(row = 9, column=1)
 
@@ -99,7 +103,7 @@ class UI:
         frame = Frame(self.Window, width=768, height=576 , bg="ivory")
         frame.grid(row=0,column=0)
         frame.grid_propagate(0)
-        Label(frame , text="Login" ,fg="red").grid(row=0 , column=1)
+        Label(frame , text=" ADMIN Login" ,fg="red").grid(row=0 , column=1)
         Label(frame , text="username").grid(row=2, column=0)
         Label(frame ,text="password").grid(row =3, column=0)
         username = Entry(frame, width=20)
@@ -141,10 +145,7 @@ class UI:
         accountclose.grid(row = 4, column=4)
 
         logout = Button(frame ,text = "Customer Logout", command= lambda: self.logout())
-        logout.grid(row = 5, column=2)
-
-        back = Button(frame ,text = "back", command= lambda: self.showsignin())
-        back.grid(row = 6, column=3)
+        logout.grid(row = 6, column=3)
         
         self.Frames["submenu"] = frame
 
@@ -265,10 +266,10 @@ class UI:
         accountno.grid(row=3, column =2)
 
         submit = Button(frame ,text = "submit", command= lambda: self.transfer(amount.get(),accountno.get()))
-        submit.grid(row = 3, column=1)
+        submit.grid(row = 5, column=1)
         
         back = Button(frame ,text = "back", command= lambda: self.showsubmenu())
-        back.grid(row = 5, column=1)
+        back.grid(row = 6, column=1)
 
         self.Frames["tranfer"] = frame
 
@@ -297,15 +298,6 @@ class UI:
     def showaddress(self):
         self.Frames["address"].tkraise()
 
-    def showdeposit(self):
-        self.Frames["deposit"].tkraise()
-
-    def showwithdraw(self):
-        self.Frames["withdraw"].tkraise()
-
-    def showtransfer(self):
-        self.Frames["tranfer"].tkraise()
-
     def loginto(self,username,password):
         db = DB()
         self.accountno = db.login(username,password)
@@ -324,18 +316,16 @@ class UI:
             
 
     def changeaddress(self,address):
-        #address = input("enter the address")
         db = DB()
         db.updateaddress(address,self.accountno)
         
 
     def deposit(self,amount):
-        #amount = input("enter the amount")
         db = DB()
         db.deposit(amount,self.accountno)
+        self.prompt("sucessfully deposited")
 
     def withdraw(self,amount):
-        #amount = input("enter the amount")
         db = DB()
         db.withdraw(amount,self.accountno)
 
@@ -355,8 +345,6 @@ class UI:
        
 
     def transfer(self,amount,actno):
-        #amount = input("enter the amount")
-        #actno = input("enter the accountno of reciever account")
         db = DB()
         db.withdraw(amount,self.accountno)
         db.deposit(amount,actno)
@@ -369,10 +357,21 @@ class UI:
         self.accountno = 0
         self.showsignin()
 
-    def signup(self,name,age,address,username,password,TOA):
+    def signup(self,name,age,address,username,password,var):
         db = DB()
+        if (var == 1):
+            TOA = "saving"
+        else:
+            TOA = "current"
         db.createaccount(name,age,address,username,password,TOA)
         self.showsignin()
+
+    def prompt(self,message):
+        box = Tk()
+        Label(box,text = message).grid(row=0,column=0)
+        Quit = Button(box ,text = "ok",command=box.destroy)
+        Quit.grid(row=2,column=1)
+        box.mainloop()
         
 
 class DB:
@@ -393,8 +392,12 @@ class DB:
         self.accountno = random.randint(1000,10000)
         print 
         balance = 0
-        sql="insert into customer values(:accountno,:name,:age,:address,:username, :password ,:TOA ,:balance)"
-        self.cursor.execute(sql,{'accountno':self.accountno,'name':name,'age':age,'address':address,'username':username,'password':password,'TOA':TOA,'balance': balance})
+        now = datetime.now()
+        print (now)
+        date = now.strftime('%d-%m-%Y')
+        print (date)
+        sql="insert into customer values(:accountno,:name,:age,:address,:username, :password ,:TOA ,:balance,to_date(:opened,'DD/MM/YYYY'))"
+        self.cursor.execute(sql,{'accountno':self.accountno,'name':name,'age':age,'address':address,'username':username,'password':password,'TOA':TOA,'balance': balance,'opened':date})
         self.con.commit()
         
     def deposit(self,amount,accountno):
@@ -407,7 +410,7 @@ class DB:
 
     def withdraw(self,amount,accountno):
         self.cursor.execute("select balance from customer where accountno = :accountno",{'accountno':accountno})
-        balance = self.cursor.fetchall()
+        record = self.cursor.fetchall()
         balance = int(record[0][0])
         amount =int(amount)
         self.cursor.execute("update customer set balance = :balance where accountno = :accountno",{'balance':balance-amount,'accountno':accountno})
@@ -438,10 +441,20 @@ class DB:
         self.cursor.execute("update customer set address = :address where accountno = :accountno",{'address':address,'accountno':accountno})
         self.con.commit()
     def close(self,accountno):
-        self.cursor.execute("insert into closeaccount values(:accountno)",{'accountno':accountno})
+        self.cursor.execute("select name,age,address,toa,balance,opened from customer where accountno = :accountno",{'accountno':accountno})
+        record = self.cursor.fetchall()
+        print (record)
+        name = record[0][0]
+        age = int(record[0][1])
+        address = record[0][2]
+        toa = record[0][3]
+        balance = record[0][4]
+        opened = record[0][5]
+        self.cursor.execute("insert into closedaccount values(:accountno,:name,:age,:address,:toa,:balance,to_date(:opened,'DD/MM/YYYY'))",{'accountno':accountno,'name':name,'age':age,'address':address,'toa':toa,'balance':balance,'opened':opened})
+        self.cursor.execute("delete from customer where accountno = :accountno",{'accountno':accountno})
         self.con.commit()
     def closedaccount(self):
-        self.cursor.execute("select * from closeaccount")
+        self.cursor.execute("select * from closedaccount")
         record = self.cursor.fetchall()
         return record
             
